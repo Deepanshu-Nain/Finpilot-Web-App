@@ -91,9 +91,9 @@ const Dashboard = () => {
         <div className="container mx-auto px-4 py-3 flex items-center justify-center gap-3">
           <Sparkles className="w-4 h-4 text-[#a0f1bd] animate-pulse" />
           <span className="text-sm text-white/90 font-medium">
-            ✨ Your <span className="text-[#a0f1bd] font-bold">{new Date().getFullYear() - 1} Budget Wrapped</span> is ready!
+            ✨ Your <span className="text-[#a0f1bd] font-bold">Monthly Budget Wrapped</span> is ready!
           </span>
-          <span className="text-xs text-[#a0f1bd]/80 hidden sm:inline">View your year in review →</span>
+          <span className="text-xs text-[#a0f1bd]/80 hidden sm:inline">View your month in review →</span>
         </div>
       </div>
 

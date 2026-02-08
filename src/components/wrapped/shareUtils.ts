@@ -5,11 +5,11 @@ const formatCurrency = (n: number) =>
 
 export function generateShareText(data: WrappedSummary): string {
   const lines = [
-    `🎉 My ${data.year} Budget Wrapped — FinPilot`,
+    `🎉 My ${data.month_name} ${data.year} Budget Wrapped — FinPilot`,
     '',
     `💰 Income: ${formatCurrency(data.total_income)}`,
     `💸 Expenses: ${formatCurrency(data.total_expenses)}`,
-    `🏦 Saved: ${formatCurrency(data.total_savings)}`,
+    `🏦 Saved: ${formatCurrency(data.total_savings)} (${data.savings_rate.toFixed(1)}%)`,
     `📊 Transactions: ${data.total_transactions}`,
     '',
   ];
@@ -26,7 +26,11 @@ export function generateShareText(data: WrappedSummary): string {
     lines.push(`🎯 Goals completed: ${data.goals_summary.completed}/${data.goals_summary.total_goals}`);
   }
 
-  lines.push('', 'Get your own Budget Wrapped → FinPilot');
+  if (data.streak_days_under_budget > 0) {
+    lines.push(`🔥 Budget streak: ${data.streak_days_under_budget} days under budget`);
+  }
+
+  lines.push('', 'Get your own Monthly Budget Wrapped → FinPilot');
 
   return lines.join('\n');
 }
@@ -37,7 +41,7 @@ export async function shareWrapped(data: WrappedSummary): Promise<void> {
   if (navigator.share) {
     try {
       await navigator.share({
-        title: `My ${data.year} Budget Wrapped`,
+        title: `My ${data.month_name} ${data.year} Budget Wrapped`,
         text,
       });
       return;

@@ -148,8 +148,8 @@ export interface CategoryBreakdown {
   icon: string;
 }
 
-export interface MonthlyData {
-  month: string;
+export interface WeeklyData {
+  week_label: string;
   income: number;
   expenses: number;
   savings: number;
@@ -165,31 +165,37 @@ export interface BiggestTransaction {
 export interface GoalsSummary {
   total_goals: number;
   completed: number;
-  missed: number;
+  in_progress: number;
   total_saved: number;
   total_target: number;
 }
 
 export interface WrappedSummary {
   year: number;
+  month: number;
+  month_name: string;
   user_name: string;
   total_income: number;
   total_expenses: number;
   total_savings: number;
-  net_worth_change: number;
+  savings_rate: number;
+  income_change: number;
+  expense_change: number;
+  savings_change: number;
   total_transactions: number;
-  average_monthly_spending: number;
+  average_daily_spending: number;
   top_categories: CategoryBreakdown[];
   most_consistent_category: string;
   biggest_transaction: BiggestTransaction | null;
-  monthly_data: MonthlyData[];
-  highest_spending_month: string;
-  most_savings_month: string;
+  weekly_data: WeeklyData[];
+  highest_spending_week: string;
+  best_savings_week: string;
   goals_summary: GoalsSummary;
   daily_average_spend: number;
-  transactions_per_month: number;
+  transactions_per_week: number;
   top_spending_day_of_week: string;
   fun_comparisons: string[];
+  streak_days_under_budget: number;
 }
 
 // API Service Object
@@ -272,11 +278,11 @@ export const api = {
       }),
   },
 
-  // Wrapped (Year Review) endpoints
+  // Wrapped (Monthly Review) endpoints
   wrapped: {
-    getSummary: (userId: string, year: number) =>
+    getSummary: (userId: string, year: number, month: number) =>
       apiCall<WrappedSummary>(
-        `/wrapped/summary?user_id=${userId}&year=${year}`,
+        `/wrapped/summary?user_id=${userId}&year=${year}&month=${month}`,
         { method: 'GET' }
       ),
   },

@@ -12,7 +12,7 @@ import {
   TopCategoriesCard,
   TransactionStatsCard,
   BiggestTransactionCard,
-  MonthlyTimelineCard,
+  WeeklyTimelineCard,
   GoalsCard,
   FunFactsCard,
   OutroCard,
@@ -34,21 +34,24 @@ const CARD_GRADIENTS = [
 ];
 
 export default function Wrapped() {
-  const { year: yearParam } = useParams<{ year?: string }>();
+  const { year: yearParam, month: monthParam } = useParams<{ year?: string; month?: string }>();
   const navigate = useNavigate();
   const { user } = useAuth();
 
-  const year = yearParam ? parseInt(yearParam, 10) : new Date().getFullYear() - 1;
+  const now = new Date();
+  const year = yearParam ? parseInt(yearParam, 10) : now.getFullYear();
+  const month = monthParam ? parseInt(monthParam, 10) : now.getMonth() + 1;
 
   const [currentSlide, setCurrentSlide] = useState(0);
   const [direction, setDirection] = useState<'left' | 'right'>('right');
   const [showConfetti, setShowConfetti] = useState(false);
 
   const { data, isLoading, error } = useQuery({
-    queryKey: ['wrapped', user?.user_id, year],
-    queryFn: () => api.wrapped.getSummary(user!.user_id, year),
+    queryKey: ['wrapped', user?.user_id, year, month],
+    queryFn: () => api.wrapped.getSummary(user!.user_id, year, month),
     enabled: !!user?.user_id,
-    staleTime: 5 * 60 * 1000,
+    staleTime: 60 * 1000, // refresh every minute for real-time feel
+    refetchInterval: 2 * 60 * 1000, // auto-refetch every 2 min
   });
 
   const totalSlides = 9;
@@ -147,7 +150,7 @@ export default function Wrapped() {
             <div className="absolute inset-0 rounded-full border-4 border-transparent border-t-[#a0f1bd] animate-spin" />
           </div>
           <p className="text-[#a0f1bd]/80 text-lg font-display">Crunching your numbers...</p>
-          <p className="text-white/40 text-sm">Preparing your {year} Budget Wrapped</p>
+          <p className="text-white/40 text-sm">Preparing your Monthly Budget Wrapped</p>
         </div>
       </div>
     );
@@ -162,8 +165,8 @@ export default function Wrapped() {
           <h2 className="text-2xl font-bold text-white font-display">No Data Yet</h2>
           <p className="text-white/60">
             {error
-              ? 'We couldn\'t load your year-end summary. Please try again.'
-              : `No financial data found for ${year}. Start tracking your finances to see your wrapped!`}
+              ? 'We couldn\'t load your monthly summary. Please try again.'
+              : `No financial data found for this month. Start tracking your finances to see your wrapped!`}
           </p>
           <Button
             onClick={() => navigate('/dashboard')}
@@ -183,7 +186,7 @@ export default function Wrapped() {
     <TopCategoriesCard data={data} isActive={currentSlide === 2} />,
     <TransactionStatsCard data={data} isActive={currentSlide === 3} />,
     <BiggestTransactionCard data={data} isActive={currentSlide === 4} />,
-    <MonthlyTimelineCard data={data} isActive={currentSlide === 5} />,
+    <WeeklyTimelineCard data={data} isActive={currentSlide === 5} />,
     <GoalsCard data={data} isActive={currentSlide === 6} />,
     <FunFactsCard data={data} isActive={currentSlide === 7} />,
     <OutroCard data={data} isActive={currentSlide === 8} />,

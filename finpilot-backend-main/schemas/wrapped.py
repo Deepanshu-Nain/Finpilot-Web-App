@@ -9,8 +9,8 @@ class CategoryBreakdown(BaseModel):
     icon: str = ""
 
 
-class MonthlyData(BaseModel):
-    month: str  # "YYYY-MM"
+class WeeklyData(BaseModel):
+    week_label: str  # "Week 1", "Week 2", etc.
     income: float
     expenses: float
     savings: float
@@ -26,24 +26,31 @@ class BiggestTransaction(BaseModel):
 class GoalSummary(BaseModel):
     total_goals: int
     completed: int
-    missed: int
+    in_progress: int
     total_saved: float
     total_target: float
 
 
 class WrappedSummaryResponse(BaseModel):
     year: int
+    month: int
+    month_name: str
     user_name: str
 
     # Core financials
     total_income: float
     total_expenses: float
     total_savings: float
-    net_worth_change: float
+    savings_rate: float
+
+    # Comparison with previous month
+    income_change: float
+    expense_change: float
+    savings_change: float
 
     # Transaction stats
     total_transactions: int
-    average_monthly_spending: float
+    average_daily_spending: float
 
     # Category insights
     top_categories: List[CategoryBreakdown]
@@ -52,16 +59,17 @@ class WrappedSummaryResponse(BaseModel):
     # Notable transactions
     biggest_transaction: Optional[BiggestTransaction]
 
-    # Monthly breakdown
-    monthly_data: List[MonthlyData]
-    highest_spending_month: str
-    most_savings_month: str
+    # Weekly breakdown within the month
+    weekly_data: List[WeeklyData]
+    highest_spending_week: str
+    best_savings_week: str
 
     # Goals
     goals_summary: GoalSummary
 
     # Fun stats
     daily_average_spend: float
-    transactions_per_month: float
+    transactions_per_week: float
     top_spending_day_of_week: str
     fun_comparisons: List[str]
+    streak_days_under_budget: int

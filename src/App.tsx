@@ -42,7 +42,7 @@ const App = () => (
               } 
             />
             <Route 
-              path="/year-review/:year" 
+              path="/wrapped/:year/:month" 
               element={
                 <ProtectedRoute>
                   <Wrapped />
