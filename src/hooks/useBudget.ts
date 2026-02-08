@@ -91,8 +91,31 @@ export const useBudget = () => {
   useEffect(() => {
     if (user) {
       loadDashboardData();
+      loadGoals();
     }
   }, [user]);
+
+  const loadGoals = async () => {
+    if (!user) return;
+    try {
+      const backendGoals = await api.goals.getAll(user.user_id);
+      const mappedGoals: SavingsGoal[] = backendGoals.map(g => ({
+        id: g.goal_id,
+        name: g.name,
+        targetAmount: g.target_amount,
+        currentAmount: g.current_amount,
+        deadline: g.deadline ? new Date(g.deadline) : null,
+        icon: g.icon,
+        color: g.color,
+        suggestion: g.suggestion,
+        monthlyAmount: g.monthly_amount,
+        expectedReturn: g.expected_return,
+      }));
+      setGoals(mappedGoals);
+    } catch (error: any) {
+      console.error('Failed to load goals:', error);
+    }
+  };
 
   const loadDashboardData = async () => {
     if (!user) return;
@@ -259,12 +282,6 @@ export const useBudget = () => {
         ? Math.ceil((deadline.getTime() - Date.now()) / (1000 * 60 * 60 * 24 * 30))
         : 12; // Default to 12 months if no deadline
 
-      const response = await api.goals.create({
-        user_id: user.user_id,
-        target_amount: targetAmount,
-        duration_months: Math.max(1, durationMonths),
-      });
-
       const colors = [
         'hsl(142, 40%, 45%)',
         'hsl(152, 68%, 70%)',
@@ -272,6 +289,18 @@ export const useBudget = () => {
         'hsl(155, 45%, 55%)',
         'hsl(148, 50%, 60%)',
       ];
+      const color = colors[goals.length % colors.length];
+
+      const response = await api.goals.create({
+        user_id: user.user_id,
+        target_amount: targetAmount,
+        duration_months: Math.max(1, durationMonths),
+        name,
+        icon,
+        deadline: deadline ? deadline.toISOString().split('T')[0] : null,
+        current_amount: 0,
+        color,
+      });
 
       const newGoal: SavingsGoal = {
         id: response.goal_id,
@@ -280,7 +309,7 @@ export const useBudget = () => {
         currentAmount: 0,
         deadline,
         icon,
-        color: colors[goals.length % colors.length],
+        color,
         suggestion: response.suggestion,
         monthlyAmount: response.monthly_amount,
         expectedReturn: response.expected_return,
@@ -298,19 +327,39 @@ export const useBudget = () => {
     }
   }, [user, goals.length]);
 
-  const updateGoalProgress = useCallback((goalId: string, amount: number) => {
-    setGoals(prev => prev.map(goal =>
-      goal.id === goalId
-        ? { ...goal, currentAmount: Math.min(goal.currentAmount + amount, goal.targetAmount) }
-        : goal
-    ));
-    toast.success('Goal progress updated!');
-  }, []);
+  const updateGoalProgress = useCallback(async (goalId: string, amount: number) => {
+    if (!user) {
+      toast.error('Please login to use this feature');
+      return;
+    }
+    try {
+      const response = await api.goals.updateProgress(goalId, { amount });
+      setGoals(prev => prev.map(goal =>
+        goal.id === goalId
+          ? { ...goal, currentAmount: response.current_amount }
+          : goal
+      ));
+      toast.success('Goal progress updated!');
+    } catch (error: any) {
+      console.error('Failed to update goal progress:', error);
+      toast.error('Failed to update goal progress');
+    }
+  }, [user]);
 
-  const deleteGoal = useCallback((goalId: string) => {
-    setGoals(prev => prev.filter(goal => goal.id !== goalId));
-    toast.success('Goal deleted!');
-  }, []);
+  const deleteGoal = useCallback(async (goalId: string) => {
+    if (!user) {
+      toast.error('Please login to use this feature');
+      return;
+    }
+    try {
+      await api.goals.delete(goalId);
+      setGoals(prev => prev.filter(goal => goal.id !== goalId));
+      toast.success('Goal deleted!');
+    } catch (error: any) {
+      console.error('Failed to delete goal:', error);
+      toast.error('Failed to delete goal');
+    }
+  }, [user]);
 
   const totalBudget = categories.reduce((sum, cat) => sum + cat.allocated, 0);
   const totalSpent = categories.reduce((sum, cat) => sum + cat.spent, 0);

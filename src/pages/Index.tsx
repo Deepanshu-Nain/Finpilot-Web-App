@@ -1,5 +1,6 @@
 import { useNavigate } from 'react-router-dom';
 import { useEffect, useState } from 'react';
+import FooterSection from '@/components/FooterSection';
 
 // SVG paths from igdtu_hack
 const svgPaths = {
@@ -259,28 +260,7 @@ const Index = () => {
         </div>
 
         {/* Footer */}
-        <footer className="bg-[#2e4f21] h-[346px] relative shrink-0 w-full">
-          <div className="overflow-clip rounded-[inherit] size-full">
-            <div className="content-stretch flex items-start justify-between px-[40px] py-[32px] relative size-full">
-              <div className="content-stretch flex flex-[1_0_0] flex-col gap-[236px] h-full items-start min-h-px min-w-px relative">
-                <div className="relative shrink-0">
-                  <h2 className="font-['Work_Sans',sans-serif] font-bold text-white text-[20px] tracking-[-0.5px]">
-                    FinPilot
-                  </h2>
-                </div>
-                <div className="font-['Work_Sans',sans-serif] font-medium leading-[1.1] relative shrink-0 text-[#d5e4d0] text-[0px] text-[12px] tracking-[-0.54px] w-full whitespace-pre-wrap">
-                  <p className="mb-0 text-white">Financial Clarity You Can Trust</p>
-                  <p>Trusted financial guidance for every stage of life and business</p>
-                </div>
-              </div>
-              <div className="content-stretch flex flex-[1_0_0] flex-col gap-[232px] h-full items-start min-h-px min-w-px relative">
-                <p className="font-['Work_Sans',sans-serif] font-medium leading-[1.1] relative shrink-0 text-[#d5e4d0] text-[12px] tracking-[-0.54px] w-full whitespace-pre-wrap">
-                  © 2025 All Rights Reserved
-                </p>
-              </div>
-            </div>
-          </div>
-        </footer>
+        <FooterSection />
       </div>
     );
   }
@@ -333,9 +313,7 @@ const Index = () => {
         </section>
       </main>
 
-      <footer className="bg-[#2e4f21] text-white p-8 text-center">
-        <p className="text-[#d5e4d0] text-sm">© 2025 All Rights Reserved</p>
-      </footer>
+      <FooterSection />
     </div>
   );
 };

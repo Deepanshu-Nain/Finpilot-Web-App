@@ -96,7 +96,7 @@ export const AddGoalDialog = ({ open, onOpenChange, onAddGoal }: AddGoalDialogPr
 
           <div className="space-y-2">
             <Label className="text-[#2e4f21]">Target Date (optional)</Label>
-            <Popover>
+            <Popover modal={true}>
               <PopoverTrigger asChild>
                 <Button
                   variant="outline"
@@ -109,7 +109,7 @@ export const AddGoalDialog = ({ open, onOpenChange, onAddGoal }: AddGoalDialogPr
                   {deadline ? format(deadline, "PPP") : "Pick a date"}
                 </Button>
               </PopoverTrigger>
-              <PopoverContent className="w-auto p-0 bg-white border border-gray-200" align="start">
+              <PopoverContent className="w-auto p-0 bg-white border border-gray-200 pointer-events-auto z-[9999]" align="start">
                 <Calendar
                   mode="single"
                   selected={deadline}

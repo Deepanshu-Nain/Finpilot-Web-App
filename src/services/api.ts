@@ -107,6 +107,11 @@ export interface GoalRequest {
   user_id: string;
   target_amount: number;
   duration_months: number;
+  name: string;
+  icon: string;
+  deadline: string | null;
+  current_amount: number;
+  color: string;
 }
 
 export interface GoalResponse {
@@ -114,6 +119,25 @@ export interface GoalResponse {
   suggestion: string;
   monthly_amount: number;
   expected_return: number;
+}
+
+export interface GoalFullResponse {
+  goal_id: string;
+  user_id: string;
+  name: string;
+  target_amount: number;
+  current_amount: number;
+  deadline: string | null;
+  icon: string;
+  color: string;
+  suggestion: string;
+  monthly_amount: number;
+  expected_return: number;
+  duration_months: number;
+}
+
+export interface GoalUpdateRequest {
+  amount: number;
 }
 
 // Wrapped (Year Review) Types
@@ -229,6 +253,22 @@ export const api = {
       apiCall<GoalResponse>('/savings/goal', {
         method: 'POST',
         body: JSON.stringify(data),
+      }),
+
+    getAll: (userId: string) =>
+      apiCall<GoalFullResponse[]>(`/savings/goals?user_id=${userId}`, {
+        method: 'GET',
+      }),
+
+    updateProgress: (goalId: string, data: GoalUpdateRequest) =>
+      apiCall<{ goal_id: string; current_amount: number }>(`/savings/goal/${goalId}`, {
+        method: 'PUT',
+        body: JSON.stringify(data),
+      }),
+
+    delete: (goalId: string) =>
+      apiCall<{ status: string; message: string }>(`/savings/goal/${goalId}`, {
+        method: 'DELETE',
       }),
   },
 
